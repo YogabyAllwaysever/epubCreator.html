@@ -8,7 +8,7 @@
   "short_name": "epubCreator",
   "start_url": "/",
   "theme_color": "#0f0f0f",
-  "id": "io.github.yogabyallwaysever.epubcreator",
+  "id": "app.netlify.yogabyallwaysever.epubcreator",
   "description": "epubCreator.html is a powerful client-side web tool that transforms your raw content (XHTML chapters, images, audio) into a fully structured EPUB 3 project.\nIt generates a ready-to-package ZIP archive compliant with the EPUB 3 specification – perfect for authors, publishers, and DIY e-book creators.",
   "lang": "en",
   "categories": [
