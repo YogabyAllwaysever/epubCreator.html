@@ -37,7 +37,7 @@ It generates a ready-to-package ZIP archive compliant with the EPUB 3 specificat
 ### 1. Get the tool
 Clone or download this repository:
 ```bash
-git clone https://github.com/yourusername/epubCreator.html.git
+git clone https://github.com/YogabyAllwaysever/epubCreator.html.git
 ```
 
 Then open index.html in your browser.
@@ -57,12 +57,12 @@ your-book.zip
 └── EPUB/
     ├── chapter1.xhtml
     ├── chapter2.xhtml
-    ├── cover.xhtml (optional)
+    ├── cover.xhtml (optional – will be regenerated)
     ├── toc.xhtml (optional – will be regenerated)
     ├── images/
-    │   └── cover.png
+    │   └── cover.png (important)
     └── audio/
-        └── background.mp3
+        └── background.mp3 (opsional – if you have audio for this book)
 ```
 
 ⚠️ The tool will reorganise files into EPUB/ automatically. Existing content.opf or nav files are ignored and replaced.
@@ -114,6 +114,8 @@ zip -Xr9D ../book.epub META-INF EPUB
 cd ..
 ```
 
+💡  Tips: You can just rename the file name and format it to [book].epub
+
 📖 The generated structure is fully EPUB 3 compliant – you just need to ensure the correct compression.
 
 ---
@@ -161,7 +163,7 @@ The entire tool is self-contained in index.html. To hack on it:
 
 📄 License
 
-This project is licensed under the MIT License – see the LICENSE file for details (you can add a LICENSE file with MIT text).
+This project is licensed under the MIT License – [see the LICENSE file for details](LICENSE).
 
 ---
 
@@ -182,15 +184,3 @@ For questions or suggestions, feel free to open an issue or reach out via GitHub
 
 Happy publishing! 🎉
 Create beautiful EPUB 3 books with ease.
-
-```
-
----
-
-### ✅ Next steps for your GitHub repo:
-
-1. **Create the repository** named `epubCreator.html` on GitHub.
-2. **Upload `index.html`** (the tool) and this `README.md`.
-3. **Add a screenshot** – rename it `screenshot.png` and include it in the README if you like.
-4. **Add a `LICENSE` file** (MIT) – I can provide the text if needed.
-5. (Optional) **Enable GitHub Pages** so users can try the tool live at `https://YogabyAllwaysever.github.io/epubCreator.html/`.
