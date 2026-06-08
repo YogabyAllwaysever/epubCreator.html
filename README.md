@@ -1,3 +1,4 @@
+#[INFO! THIS APP IS UNDER REDEVELOPMENT, THE README.md CONTENT MAY BE INCORRECT]
 # 📚 epubCreator.html – EPUB 3 Completer
 
 **epubCreator.html** is a powerful client-side web tool that transforms your raw content (XHTML chapters, images, audio) into a fully structured **EPUB 3** project.  

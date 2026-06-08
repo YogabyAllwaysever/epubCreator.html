@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>EPUB Editor - Android Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #121212; font-family: 'Outfit', system-ui, sans-serif; color: #eee; padding-bottom: 70px; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+        :root { --accent: #ffce00; --bg-card: #1e1e1e; --bg-surface: #2c2c2e; --border: #3a3a3c; --text-muted: #aaa; }
+        .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
+        .app-bar { background: var(--bg-card); border-radius: 28px; padding: 1rem 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .app-bar h1 { font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, #fff, var(--accent)); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(30,30,30,0.96); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 8px 16px 20px; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #aaa; font-size: 0.7rem; padding: 6px 12px; border-radius: 40px; cursor: pointer; transition: 0.1s; }
+        .nav-tab i { font-size: 1.5rem; }
+        .nav-tab.active { color: var(--accent); background: rgba(255,206,0,0.1); }
+        .tab-content { display: none; animation: fadeIn 0.2s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+        .card { background: var(--bg-card); border-radius: 28px; padding: 1.2rem; margin-bottom: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        h2 { font-size: 1.2rem; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 10px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+        label { display: block; font-weight: 500; margin-bottom: 0.3rem; font-size: 0.8rem; color: var(--text-muted); }
+        input, textarea, select { width: 100%; padding: 0.7rem 1rem; background: #2a2a2c; border: 1px solid var(--border); border-radius: 20px; color: white; font-family: inherit; margin-bottom: 1rem; }
+        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 0.75rem; border-radius: 40px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; }
+        .btn:active { transform: scale(0.96); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+        .btn-sm { padding: 0.4rem 0.8rem; width: auto; font-size: 0.8rem; background: var(--bg-surface); color: white; border: 1px solid var(--border); border-radius: 40px; }
+        .btn-sm.danger { border-color: #cf6679; color: #ffb4a2; }
+        .file-zone { border: 2px dashed var(--border); border-radius: 28px; padding: 1.5rem; text-align: center; cursor: pointer; background: #1a1a1c; margin-bottom: 1rem; }
+        .bab-list { background: #0f0f10; border-radius: 20px; margin-top: 0.5rem; overflow: hidden; }
+        .bab-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); }
+        .bab-title { flex: 1; background: none; border: none; color: white; font-weight: 500; padding: 0.2rem; }
+        .move-btn { background: #333; border: none; color: white; padding: 4px 8px; border-radius: 12px; cursor: pointer; margin-left: 6px; }
+        .info { background: rgba(255,206,0,0.1); padding: 0.8rem; border-radius: 20px; font-size: 0.8rem; border-left: 3px solid var(--accent); margin: 1rem 0; }
+        .progress { background: #333; border-radius: 20px; height: 6px; margin: 0.5rem 0; }
+        .progress-bar { background: var(--accent); width: 0%; height: 100%; border-radius: 20px; }
+        .dynamic-item { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; background: #1e1e20; padding: 8px; border-radius: 20px; }
+        .flex-buttons { display: flex; gap: 12px; margin: 1rem 0; }
+        footer { text-align: center; font-size: 0.7rem; color: #666; margin-top: 1rem; }
+        @media (max-width: 560px) { .container { padding: 0.8rem; } .card { padding: 1rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="app-bar"><i class="fas fa-book-open" style="font-size: 1.8rem; color: var(--accent);"></i><h1>EPUB Editor</h1></div>
+    <div id="tabMetadata" class="tab-content active">
+        <div class="card">
+            <h2><i class="fas fa-pen-fancy"></i> Metadata Buku</h2>
+            <label>Judul Utama *</label><input type="text" id="mainTitle" placeholder="Judul Buku">
+            <label>Subtitle</label><input type="text" id="subTitle" placeholder="Subtitle">
+            <label>Volume</label><input type="text" id="volume" placeholder="Vol. 1">
+            <label>Judul Tambahan</label><div id="extraTitlesContainer"></div><button type="button" id="addExtraTitleBtn" class="btn-sm"><i class="fas fa-plus"></i> Tambah Judul</button>
+            <label style="margin-top:12px;">Penulis (Creator) *</label><input type="text" id="creator" placeholder="Nama Penulis">
+            <label>Kontributor (Nama, Role: aut, ill, edt)</label><div id="contributorsContainer"></div><button type="button" id="addContributorBtn" class="btn-sm"><i class="fas fa-user-plus"></i> Tambah Kontributor</button>
+            <label>Bahasa</label><input type="text" id="language" value="id">
+            <label>Identifier (UUID/ISBN)</label><input type="text" id="identifier" placeholder="urn:uuid:xxxx">
+            <label>Tanggal (YYYY-MM-DD)</label><input type="date" id="date">
+            <label>Penerbit</label><input type="text" id="publisher">
+            <label>Deskripsi</label><textarea id="description" rows="2"></textarea>
+            <label>Subjek (pisah koma)</label><input type="text" id="subjects" placeholder="Fiksi, Petualangan">
+            <label>Nama Seri</label><input type="text" id="collectionName">
+            <label>Nomor Seri</label><input type="text" id="collectionNumber">
+        </div>
+    </div>
+    <div id="tabBabMedia" class="tab-content">
+        <div class="card">
+            <h2><i class="fas fa-upload"></i> Unggah ZIP Proyek</h2>
+            <div class="file-zone" id="fileZone"><i class="fas fa-folder-open" style="font-size: 2rem; color: var(--accent);"></i><div>📁 Klik atau taruh file ZIP di sini</div><input type="file" id="zipInput" accept=".zip" style="display: none;"></div>
+            <div id="status" class="info"></div>
+            <div class="progress" id="progressBar" style="display:none;"><div class="progress-bar"></div></div>
+        </div>
+        <div class="card"><h2><i class="fas fa-list-ol"></i> Urutan Bab (drag & drop)</h2><div id="babListContainer" class="bab-list"></div></div>
+        <div class="card"><h2><i class="fas fa-images"></i> Media Terdeteksi</h2><div id="mediaSummary" class="info"></div>
+            <div class="flex-buttons"><button id="resetProjectBtn" class="btn-outline btn-sm"><i class="fas fa-trash-alt"></i> Hapus Proyek</button><button id="downloadTemplateBtn" class="btn-outline btn-sm"><i class="fas fa-download"></i> Template Bab</button></div>
+        </div>
+    </div>
+    <div id="tabGenerate" class="tab-content">
+        <div class="card"><h2><i class="fas fa-magic"></i> Generate EPUB</h2><p>Pastikan semua metadata dan ZIP sudah diupload. Klik tombol di bawah untuk membuat file EPUB.</p><button id="generateBtn" class="btn"><i class="fas fa-download"></i> Generate & Download</button><footer><i class="fas fa-database"></i> Data tersimpan di IndexedDB</footer></div>
+    </div>
+</div>
+<div class="bottom-nav">
+    <button class="nav-tab active" data-tab="metadata"><i class="fas fa-info-circle"></i><span>Metadata</span></button>
+    <button class="nav-tab" data-tab="babmedia"><i class="fas fa-layer-group"></i><span>Bab & Media</span></button>
+    <button class="nav-tab" data-tab="generate"><i class="fas fa-cog"></i><span>Generate</span></button>
+</div>
+<script>
+    // ======================= INDEXEDDB WRAPPER =======================
+    const DB_NAME = 'EpubSuiteDB';
+    const DB_VERSION = 1;
+    const PROJECTS_STORE = 'projects';
+    const METADATA_STORE = 'metadata';
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(PROJECTS_STORE)) db.createObjectStore(PROJECTS_STORE, { keyPath: 'id' });
+                if (!db.objectStoreNames.contains(METADATA_STORE)) db.createObjectStore(METADATA_STORE, { keyPath: 'id' });
+            };
+        });
+    }
+
+    async function getProject(projectId) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(PROJECTS_STORE, 'readonly');
+            const store = tx.objectStore(PROJECTS_STORE);
+            const request = store.get(projectId);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function saveProject(project) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(PROJECTS_STORE, 'readwrite');
+            const store = tx.objectStore(PROJECTS_STORE);
+            const request = store.put(project);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function getMetadata(projectId) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(METADATA_STORE, 'readonly');
+            const store = tx.objectStore(METADATA_STORE);
+            const request = store.get(projectId);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function saveMetadata(metadata) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(METADATA_STORE, 'readwrite');
+            const store = tx.objectStore(METADATA_STORE);
+            const request = store.put(metadata);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function deleteProjectData(projectId) {
+        const db = await openDB();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(PROJECTS_STORE, 'readwrite');
+            const store = tx.objectStore(PROJECTS_STORE);
+            const request = store.delete(projectId);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+        const db2 = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db2.transaction(METADATA_STORE, 'readwrite');
+            const store = tx.objectStore(METADATA_STORE);
+            const request = store.delete(projectId);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    // ======================= STATE =======================
+    let projectId = localStorage.getItem('current_project_id') || Date.now().toString();
+    let originalZipBlob = null;
+    let babItems = [];
+    let mediaItems = { images: [], audio: [] };
+    let coverImagePath = null;
+    let hasCoverXhtml = false;
+    let extraTitles = [];
+    let contributors = [];
+    let coverDataUrl = null;
+
+    const statusDiv = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
+    const babContainer = document.getElementById('babListContainer');
+    const mediaSummary = document.getElementById('mediaSummary');
+    const fileZone = document.getElementById('fileZone');
+    const zipInput = document.getElementById('zipInput');
+
+    async function saveCurrentProject() {
+        const metadataObj = {
+            id: projectId,
+            metadata: {
+                mainTitle: document.getElementById('mainTitle').value,
+                subTitle: document.getElementById('subTitle').value,
+                volume: document.getElementById('volume').value,
+                creator: document.getElementById('creator').value,
+                language: document.getElementById('language').value,
+                identifier: document.getElementById('identifier').value,
+                date: document.getElementById('date').value,
+                publisher: document.getElementById('publisher').value,
+                description: document.getElementById('description').value,
+                subjects: document.getElementById('subjects').value,
+                collectionName: document.getElementById('collectionName').value,
+                collectionNumber: document.getElementById('collectionNumber').value,
+                extraTitles: extraTitles,
+                contributors: contributors
+            },
+            babItems: babItems,
+            coverImagePath: coverImagePath,
+            hasCoverXhtml: hasCoverXhtml,
+            coverDataUrl: coverDataUrl,
+            lastUpdated: new Date().toISOString()
+        };
+        await saveMetadata(metadataObj);
+        const projectInfo = {
+            id: projectId,
+            title: document.getElementById('mainTitle').value || 'Proyek Tanpa Judul',
+            chapterCount: babItems.length,
+            lastEdited: new Date().toISOString(),
+            coverDataUrl: coverDataUrl
+        };
+        await saveProject(projectInfo);
+    }
+
+    async function loadProject() {
+        const metadata = await getMetadata(projectId);
+        if (!metadata) {
+            // inisialisasi default
+            document.getElementById('mainTitle').value = 'Buku EPUB Baru';
+            document.getElementById('creator').value = 'Penulis';
+            document.getElementById('identifier').value = 'urn:uuid:' + crypto.randomUUID();
+            document.getElementById('date').value = new Date().toISOString().slice(0,10);
+            extraTitles = [];
+            contributors = [];
+            babItems = [];
+            coverImagePath = null;
+            hasCoverXhtml = false;
+            coverDataUrl = null;
+            await saveCurrentProject();
+            return;
+        }
+        document.getElementById('mainTitle').value = metadata.metadata.mainTitle || '';
+        document.getElementById('subTitle').value = metadata.metadata.subTitle || '';
+        document.getElementById('volume').value = metadata.metadata.volume || '';
+        document.getElementById('creator').value = metadata.metadata.creator || '';
+        document.getElementById('language').value = metadata.metadata.language || 'id';
+        document.getElementById('identifier').value = metadata.metadata.identifier || '';
+        document.getElementById('date').value = metadata.metadata.date || '';
+        document.getElementById('publisher').value = metadata.metadata.publisher || '';
+        document.getElementById('description').value = metadata.metadata.description || '';
+        document.getElementById('subjects').value = metadata.metadata.subjects || '';
+        document.getElementById('collectionName').value = metadata.metadata.collectionName || '';
+        document.getElementById('collectionNumber').value = metadata.metadata.collectionNumber || '';
+        extraTitles = metadata.metadata.extraTitles || [];
+        contributors = metadata.metadata.contributors || [];
+        babItems = metadata.babItems || [];
+        coverImagePath = metadata.coverImagePath;
+        hasCoverXhtml = metadata.hasCoverXhtml;
+        coverDataUrl = metadata.coverDataUrl || null;
+        renderExtraTitles();
+        renderContributors();
+        renderBabList();
+        renderMediaSummary();
+        statusDiv.innerHTML = '<i class="fas fa-history"></i> Proyek dimuat. Upload ZIP untuk mengedit konten.';
+    }
+
+    function renderExtraTitles() {
+        const container = document.getElementById('extraTitlesContainer');
+        if (!container) return;
+        container.innerHTML = extraTitles.map((title, idx) => `<div class="dynamic-item"><input type="text" value="${escapeHtml(title)}" data-idx="${idx}" class="extra-title-input" style="flex:1;"><button class="btn-sm danger remove-extra-title" data-idx="${idx}"><i class="fas fa-times"></i></button></div>`).join('');
+        document.querySelectorAll('.extra-title-input').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); extraTitles[idx] = inp.value; saveCurrentProject(); }));
+        document.querySelectorAll('.remove-extra-title').forEach(btn => btn.addEventListener('click', (e) => { const idx = parseInt(btn.dataset.idx); extraTitles.splice(idx,1); renderExtraTitles(); saveCurrentProject(); }));
+    }
+
+    function renderContributors() {
+        const container = document.getElementById('contributorsContainer');
+        if (!container) return;
+        container.innerHTML = contributors.map((c, idx) => `<div class="dynamic-item"><input type="text" placeholder="Nama" value="${escapeHtml(c.name)}" data-idx="${idx}" class="contrib-name" style="flex:2;"><input type="text" placeholder="Role" value="${escapeHtml(c.role)}" data-idx="${idx}" class="contrib-role" style="flex:1;"><button class="btn-sm danger remove-contrib" data-idx="${idx}"><i class="fas fa-user-minus"></i></button></div>`).join('');
+        document.querySelectorAll('.contrib-name').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); contributors[idx].name = inp.value; saveCurrentProject(); }));
+        document.querySelectorAll('.contrib-role').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); contributors[idx].role = inp.value; saveCurrentProject(); }));
+        document.querySelectorAll('.remove-contrib').forEach(btn => btn.addEventListener('click', (e) => { const idx = parseInt(btn.dataset.idx); contributors.splice(idx,1); renderContributors(); saveCurrentProject(); }));
+    }
+
+    function renderBabList() {
+        if (!babItems.length) { babContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#888;">Belum ada bab. Upload ZIP.</div>'; return; }
+        let html = '';
+        babItems.forEach((bab, idx) => { html += `<div class="bab-item" draggable="true" data-index="${idx}"><div style="display:flex; align-items:center; gap:8px; flex:1;"><i class="fas fa-grip-vertical" style="cursor:grab;"></i><input type="text" class="bab-title" value="${escapeHtml(bab.title)}" data-idx="${idx}" style="background:none; border:none;"><span style="font-size:0.7rem; color:#777;">${bab.name}</span></div><div><button class="move-btn move-up" data-idx="${idx}"><i class="fas fa-chevron-up"></i></button><button class="move-btn move-down" data-idx="${idx}"><i class="fas fa-chevron-down"></i></button></div></div>`; });
+        babContainer.innerHTML = html;
+        document.querySelectorAll('.bab-title').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); babItems[idx].title = inp.value; saveCurrentProject(); }));
+        attachDragAndDrop();
+        attachMoveButtons();
+    }
+
+    function attachDragAndDrop() { const items = document.querySelectorAll('.bab-item'); items.forEach(item => { item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', e => e.preventDefault()); item.addEventListener('drop', handleDrop); }); }
+    let dragSrcIndex = null;
+    function handleDragStart(e) { const el = e.target.closest('.bab-item'); if(el) { dragSrcIndex = parseInt(el.dataset.index); e.dataTransfer.effectAllowed = 'move'; } }
+    function handleDrop(e) { e.preventDefault(); const targetEl = e.target.closest('.bab-item'); if(targetEl && dragSrcIndex !== null) { const targetIndex = parseInt(targetEl.dataset.index); if(dragSrcIndex !== targetIndex) { const [moved] = babItems.splice(dragSrcIndex,1); babItems.splice(targetIndex,0,moved); renderBabList(); saveCurrentProject(); } dragSrcIndex = null; } }
+    function attachMoveButtons() { document.querySelectorAll('.move-up').forEach(btn => btn.addEventListener('click', () => { const idx = parseInt(btn.dataset.idx); if(idx>0) { [babItems[idx-1], babItems[idx]] = [babItems[idx], babItems[idx-1]]; renderBabList(); saveCurrentProject(); } })); document.querySelectorAll('.move-down').forEach(btn => btn.addEventListener('click', () => { const idx = parseInt(btn.dataset.idx); if(idx<babItems.length-1) { [babItems[idx+1], babItems[idx]] = [babItems[idx], babItems[idx+1]]; renderBabList(); saveCurrentProject(); } })); }
+
+    function renderMediaSummary() { mediaSummary.innerHTML = `<i class="fas fa-image"></i> ${mediaItems.images.length} Gambar &nbsp;| <i class="fas fa-headphones"></i> ${mediaItems.audio.length} Audio &nbsp;| Cover: ${coverImagePath ? '✅ Ada' : '❌ Tidak ada'}`; }
+
+    fileZone.addEventListener('click', () => zipInput.click());
+    zipInput.addEventListener('change', handleZipUpload);
+
+    async function handleZipUpload(e) {
+        const file = e.target.files[0];
+        if (!file || !file.name.endsWith('.zip')) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Pilih file ZIP yang valid.'; return; }
+        statusDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Membaca ZIP...';
+        progressBar.style.display = 'block';
+        document.querySelector('.progress-bar').style.width = '20%';
+        try {
+            const zip = await JSZip.loadAsync(file);
+            originalZipBlob = file;
+            const newBabItems = [];
+            const newMedia = { images: [], audio: [] };
+            let newCoverPath = null;
+            let newHasCoverXhtml = false;
+
+            const allFiles = Object.keys(zip.files);
+            let processed = 0;
+            for (const relPath of allFiles) {
+                if (zip.files[relPath].dir) continue;
+                const zipFile = zip.files[relPath];
+                const name = relPath.split('/').pop();
+                if (/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(name)) {
+                    if (relPath.toLowerCase().includes('cover') || name.match(/^cover\./i)) newCoverPath = relPath;
+                    newMedia.images.push({ path: relPath, name });
+                } else if (/\.(mp3|m4a|ogg|wav)$/i.test(name)) {
+                    newMedia.audio.push({ path: relPath, name });
+                } else if (/\.(xhtml|html|xml)$/i.test(name)) {
+                    if (name === 'cover.xhtml' || name === 'cover.html') newHasCoverXhtml = true;
+                    else {
+                        let content = await zipFile.async('string');
+                        let title = name.replace(/\.xhtml$/i, '').replace(/\.html$/i, '');
+                        const match = content.match(/<title[^>]*>([^<]*)<\/title>/i);
+                        if (match && match[1]) title = match[1].trim();
+                        newBabItems.push({ path: relPath, name, title });
+                    }
+                }
+                processed++;
+                document.querySelector('.progress-bar').style.width = `${20 + (processed/allFiles.length)*60}%`;
+            }
+            babItems = newBabItems.sort((a,b)=>a.name.localeCompare(b.name));
+            mediaItems = newMedia;
+            coverImagePath = newCoverPath;
+            hasCoverXhtml = newHasCoverXhtml;
+
+            if (coverImagePath) {
+                try {
+                    const coverFile = zip.files[coverImagePath];
+                    const blob = await coverFile.async('blob');
+                    coverDataUrl = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+                } catch(err) { coverDataUrl = null; }
+            } else { coverDataUrl = null; }
+
+            renderBabList();
+            renderMediaSummary();
+            statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> ZIP siap: ${babItems.length} bab, ${mediaItems.images.length} gambar, ${mediaItems.audio.length} audio.`;
+            await saveCurrentProject();
+            progressBar.style.display = 'none';
+        } catch(err) { statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> Gagal membaca ZIP.'; progressBar.style.display = 'none'; }
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+        if (!originalZipBlob) { statusDiv.innerHTML = '<i class="fas fa-ban"></i> Upload ZIP terlebih dahulu.'; return; }
+        const mainTitle = document.getElementById('mainTitle').value.trim();
+        const creator = document.getElementById('creator').value.trim();
+        if (!mainTitle || !creator) { alert("Judul dan Penulis harus diisi."); return; }
+        statusDiv.innerHTML = '<i class="fas fa-cog fa-spin"></i> Membangun EPUB...';
+        const newZip = new JSZip();
+        const zip = await JSZip.loadAsync(originalZipBlob);
+        const skipPaths = ['content.opf', 'META-INF/container.xml', 'toc.xhtml', 'nav.xhtml', 'cover.xhtml', 'mimetype'];
+        for (const relPath of Object.keys(zip.files)) {
+            if (zip.files[relPath].dir) continue;
+            if (skipPaths.includes(relPath) || relPath.startsWith('META-INF/')) continue;
+            const blob = await zip.files[relPath].async('blob');
+            let newPath = relPath.startsWith('EPUB/') ? relPath : 'EPUB/' + relPath;
+            newZip.file(newPath, blob);
+        }
+        newZip.file("mimetype", "application/epub+zip", { compression: "STORE" });
+        newZip.file("META-INF/container.xml", `<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="EPUB/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`);
+        let coverImgRel = coverImagePath ? coverImagePath : "images/cover.png";
+        if (coverImgRel.startsWith('EPUB/')) coverImgRel = coverImgRel.substring(5);
+        let manifest = [], spine = [];
+        manifest.push(`<item id="cover-image" href="${escapeXml(coverImgRel)}" media-type="${coverImgRel.endsWith('.png')?'image/png':'image/jpeg'}" properties="cover-image"/>`);
+        const coverXhtmlPath = "cover.xhtml";
+        if (!hasCoverXhtml) {
+            const coverHtml = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${escapeXml(document.getElementById('language').value)}"><head><title>${escapeXml(mainTitle)}</title></head><body><svg width="100%" height="100%"><image width="100%" height="100%" href="${escapeXml(coverImgRel)}"/></svg></body></html>`;
+            newZip.file("EPUB/" + coverXhtmlPath, coverHtml);
+        } else {
+            const coverFile = zip.files[coverXhtmlPath];
+            if (coverFile) newZip.file("EPUB/" + coverXhtmlPath, await coverFile.async('blob'));
+        }
+        manifest.push(`<item id="cover-xhtml" href="${coverXhtmlPath}" media-type="application/xhtml+xml"/>`);
+        spine.push(`<itemref idref="cover-xhtml" linear="yes"/>`);
+        const tocPath = "toc.xhtml";
+        let navPoints = babItems.map(bab => `<li><a href="${escapeXml(bab.path.startsWith('EPUB/')?bab.path.substring(5):bab.path)}">${escapeXml(bab.title)}</a></li>`).join("\n");
+        const tocContent = `<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Daftar Isi</title></head><body><nav epub:type="toc"><h1>Daftar Isi</h1><ol>${navPoints}</ol></nav></body></html>`;
+        newZip.file("EPUB/" + tocPath, tocContent);
+        manifest.push(`<item id="toc" href="${tocPath}" media-type="application/xhtml+xml" properties="nav"/>`);
+        spine.push(`<itemref idref="toc" linear="no"/>`);
+        babItems.forEach((bab, idx) => { const id = `chap_${idx+1}`; let href = bab.path.startsWith('EPUB/') ? bab.path.substring(5) : bab.path; manifest.push(`<item id="${id}" href="${href}" media-type="application/xhtml+xml"/>`); spine.push(`<itemref idref="${id}" linear="yes"/>`); });
+        [...mediaItems.images, ...mediaItems.audio].forEach(med => { const id = `media_${med.name.replace(/[^a-zA-Z0-9]/g, '_')}`; let href = med.path.startsWith('EPUB/') ? med.path.substring(5) : med.path; const ext = med.name.split('.').pop().toLowerCase(); let mime = 'application/octet-stream'; if (ext==='png') mime='image/png'; else if (ext==='jpg'||ext==='jpeg') mime='image/jpeg'; else if (ext==='webp') mime='image/webp'; else if (ext==='mp3') mime='audio/mpeg'; manifest.push(`<item id="${id}" href="${href}" media-type="${mime}"/>`); });
+        let titles = [mainTitle]; if (document.getElementById('subTitle').value.trim()) titles.push(document.getElementById('subTitle').value.trim()); if (document.getElementById('volume').value.trim()) titles.push(document.getElementById('volume').value.trim()); extraTitles.forEach(t => { if(t.trim()) titles.push(t.trim()); });
+        let allContributors = [{ name: creator, role: "aut" }]; contributors.forEach(c => { if(c.name.trim()) allContributors.push({ name: c.name.trim(), role: c.role.trim() || "ctb" }); });
+        let metadata = titles.map(t => `<dc:title>${escapeXml(t)}</dc:title>`);
+        allContributors.forEach(c => { if(c.role==='aut') metadata.push(`<dc:creator id="creator">${escapeXml(c.name)}</dc:creator>`); else metadata.push(`<dc:contributor>${escapeXml(c.name)}</dc:contributor>`); });
+        const subjects = document.getElementById('subjects').value.split(',').map(s=>s.trim()).filter(s=>s); subjects.forEach(s => metadata.push(`<dc:subject>${escapeXml(s)}</dc:subject>`));
+        if(document.getElementById('description').value.trim()) metadata.push(`<dc:description>${escapeXml(document.getElementById('description').value)}</dc:description>`);
+        if(document.getElementById('publisher').value.trim()) metadata.push(`<dc:publisher>${escapeXml(document.getElementById('publisher').value)}</dc:publisher>`);
+        metadata.push(`<dc:language>${escapeXml(document.getElementById('language').value)}</dc:language>`);
+        let identifier = document.getElementById('identifier').value.trim(); if(!identifier) identifier = "urn:uuid:" + crypto.randomUUID();
+        metadata.push(`<dc:identifier id="pub-id">${escapeXml(identifier)}</dc:identifier>`);
+        metadata.push(`<dc:date>${escapeXml(document.getElementById('date').value || new Date().toISOString().slice(0,10))}</dc:date>`);
+        const collectionName = document.getElementById('collectionName').value.trim(); const collectionNumber = document.getElementById('collectionNumber').value.trim();
+        if(collectionName) { metadata.push(`<meta property="belongs-to-collection" id="collection">${escapeXml(collectionName)}</meta>`); if(collectionNumber) metadata.push(`<meta property="group-position" refines="#collection">${escapeXml(collectionNumber)}</meta>`); }
+        metadata.push(`<meta property="dcterms:modified">${new Date().toISOString()}</meta><meta property="rendition:layout">reflowable</meta>`);
+        const opf = `<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="${escapeXml(document.getElementById('language').value)}"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">${metadata.join("\n    ")}</metadata><manifest>${manifest.join("\n    ")}</manifest><spine page-progression-direction="ltr">${spine.join("\n    ")}</spine></package>`;
+        newZip.file("EPUB/content.opf", opf);
+        const zipBlob = await newZip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a'); a.href = url; a.download = `${mainTitle.replace(/[^a-z0-9]/gi, '_')}_epub.zip`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Berhasil! File ZIP EPUB siap.';
+        await saveCurrentProject();
+    });
+
+    document.getElementById('resetProjectBtn').addEventListener('click', async () => { if(confirm('Hapus semua data proyek ini?')) { await deleteProjectData(projectId); projectId = Date.now().toString(); localStorage.setItem('current_project_id', projectId); location.reload(); } });
+    document.getElementById('downloadTemplateBtn').addEventListener('click', () => { const template = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id"><head><title>Judul Bab</title><meta name="viewport" content="width=device-width"/></head><body><h1>Judul Bab</h1><p>Tulis konten di sini.</p></body></html>`; const blob = new Blob([template], {type:"application/xhtml+xml"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "template-bab.xhtml"; a.click(); URL.revokeObjectURL(a.href); });
+    const autoSaveFields = ['mainTitle','subTitle','volume','creator','language','identifier','date','publisher','description','subjects','collectionName','collectionNumber'];
+    autoSaveFields.forEach(id => { document.getElementById(id)?.addEventListener('input', () => saveCurrentProject()); });
+    document.getElementById('addExtraTitleBtn')?.addEventListener('click', () => { extraTitles.push(''); renderExtraTitles(); saveCurrentProject(); });
+    document.getElementById('addContributorBtn')?.addEventListener('click', () => { contributors.push({ name: '', role: '' }); renderContributors(); saveCurrentProject(); });
+    const tabs = document.querySelectorAll('.nav-tab'); const contents = { metadata: document.getElementById('tabMetadata'), babmedia: document.getElementById('tabBabMedia'), generate: document.getElementById('tabGenerate') };
+    tabs.forEach(tab => { tab.addEventListener('click', () => { const target = tab.dataset.tab; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(contents).forEach(c => c.classList.remove('active')); if (target==='metadata') contents.metadata.classList.add('active'); else if (target==='babmedia') contents.babmedia.classList.add('active'); else if (target==='generate') contents.generate.classList.add('active'); }); });
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    function escapeXml(str) { return escapeHtml(str); }
+    loadProject();
+</script>
+</body>
+</html>
