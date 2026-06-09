@@ -4,7 +4,8 @@
 const CACHE_NAME = 'epub-completer-v1';
 const STATIC_ASSETS = [
   '/',
-  '/index.html',
+  '/pages/index.html',
+  '/pages/editor.html',
   '/assets/icon-transparent.png',
   '/assets/icons/icon-transparent.png',
   '/assets/code/manifest.json',

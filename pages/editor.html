@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>epubCreator - Edit Buku</title>
+    <title>epubCreator - Edit Book</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -469,41 +469,41 @@
     
     <div id="tabMetadata" class="tab-content active">
         <div class="card">
-            <h2><i class="fas fa-pen-fancy"></i> Metadata Buku</h2>
-            <label>Judul Utama *</label><input type="text" id="mainTitle" placeholder="Misal: Petualangan di Negeri Awan">
-            <label>Subtitle</label><input type="text" id="subTitle" placeholder="Cerita fantasi anak">
+            <h2><i class="fas fa-pen-fancy"></i> Book Metadata</h2>
+            <label>Main Title *</label><input type="text" id="mainTitle" placeholder="e.g., Adventure in Cloud Land">
+            <label>Subtitle</label><input type="text" id="subTitle" placeholder="Children's fantasy story">
             <label>Volume</label><input type="text" id="volume" placeholder="Vol. 1">
-            <label>Judul Tambahan</label><div id="extraTitlesContainer"></div><button type="button" id="addExtraTitleBtn" class="btn-sm"><i class="fas fa-plus"></i> Tambah Judul</button>
-            <label style="margin-top:12px;">Penulis (Creator) *</label><input type="text" id="creator" placeholder="Nama Penulis">
-            <label>Kontributor</label><div id="contributorsContainer"></div><button type="button" id="addContributorBtn" class="btn-sm"><i class="fas fa-user-plus"></i> Tambah Kontributor</button>
-            <label>Bahasa</label><input type="text" id="language" value="id">
+            <label>Additional Titles</label><div id="extraTitlesContainer"></div><button type="button" id="addExtraTitleBtn" class="btn-sm"><i class="fas fa-plus"></i> Add Title</button>
+            <label style="margin-top:12px;">Author (Creator) *</label><input type="text" id="creator" placeholder="Author name">
+            <label>Contributors</label><div id="contributorsContainer"></div><button type="button" id="addContributorBtn" class="btn-sm"><i class="fas fa-user-plus"></i> Add Contributor</button>
+            <label>Language</label><input type="text" id="language" value="en">
             <label>Identifier (URN)</label><input type="text" id="identifier" placeholder="urn:uuid:xxxx-xxxx">
-            <label>Tanggal</label><input type="date" id="date">
-            <label>Penerbit</label><input type="text" id="publisher">
-            <label>Deskripsi</label><textarea id="description" rows="2" placeholder="Sinopsis singkat..."></textarea>
-            <label>Subjek (pisah koma)</label><input type="text" id="subjects" placeholder="Fiksi, Petualangan, Remaja">
-            <label>Nama Seri</label><input type="text" id="collectionName">
-            <label>Nomor Seri</label><input type="text" id="collectionNumber">
+            <label>Date</label><input type="date" id="date">
+            <label>Publisher</label><input type="text" id="publisher">
+            <label>Description</label><textarea id="description" rows="2" placeholder="Brief synopsis..."></textarea>
+            <label>Subjects (comma separated)</label><input type="text" id="subjects" placeholder="Fiction, Adventure, Teen">
+            <label>Series Name</label><input type="text" id="collectionName">
+            <label>Series Number</label><input type="text" id="collectionNumber">
         </div>
     </div>
     
     <div id="tabBabMedia" class="tab-content">
         <div class="card">
-            <h2><i class="fas fa-upload"></i> Unggah ZIP Proyek</h2>
-            <div class="file-zone" id="fileZone"><i class="fas fa-folder-open"></i><div style="margin-top: 6px;">📁 Klik atau taruh file ZIP di sini</div><input type="file" id="zipInput" accept=".zip" style="display: none;"></div>
-            <div id="status" class="info"><i class="fas fa-info-circle"></i> Belum ada proyek diunggah.</div>
+            <h2><i class="fas fa-upload"></i> Upload Project ZIP</h2>
+            <div class="file-zone" id="fileZone"><i class="fas fa-folder-open"></i><div style="margin-top: 6px;">📁 Click or drop ZIP file here</div><input type="file" id="zipInput" accept=".zip" style="display: none;"></div>
+            <div id="status" class="info"><i class="fas fa-info-circle"></i> No project uploaded yet.</div>
             <div class="progress" id="progressBar" style="display:none;"><div class="progress-bar"></div></div>
         </div>
         <div class="card">
-            <h2><i class="fas fa-list-ol"></i> Urutan Bab (drag & drop)</h2>
+            <h2><i class="fas fa-list-ol"></i> Chapter Order (drag & drop)</h2>
             <div id="babListContainer" class="bab-list"></div>
         </div>
         <div class="card">
             <h2><i class="fas fa-images"></i> Media & Cover</h2>
             <div id="mediaSummary" class="info"></div>
             <div class="flex-buttons">
-                <button id="resetProjectBtn" class="btn-outline btn-sm"><i class="fas fa-trash-alt"></i> Hapus Proyek</button>
-                <button id="downloadTemplateBtn" class="btn-outline btn-sm"><i class="fas fa-download"></i> Template Bab</button>
+                <button id="resetProjectBtn" class="btn-outline btn-sm"><i class="fas fa-trash-alt"></i> Delete Project</button>
+                <button id="downloadTemplateBtn" class="btn-outline btn-sm"><i class="fas fa-download"></i> Chapter Template</button>
             </div>
         </div>
     </div>
@@ -511,19 +511,19 @@
     <div id="tabGenerate" class="tab-content">
         <div class="card">
             <h2><i class="fas fa-magic"></i> Generate EPUB</h2>
-            <p style="margin-bottom: 16px; color: var(--srui-text-secondary);">Pastikan ZIP sudah diupload dan metadata valid.</p>
+            <p style="margin-bottom: 16px; color: var(--srui-text-secondary);">Make sure ZIP is uploaded and metadata is valid.</p>
             <button id="generateBtn" class="btn"><i class="fas fa-download"></i> Generate & Download EPUB</button>
-            <footer><i class="fas fa-database"></i> File media tersimpan di IndexedDB | SRUI Experience</footer>
+            <footer><i class="fas fa-database"></i> Media files stored in IndexedDB | SRUI Experience</footer>
         </div>
     </div>
 </div>
 
 <div class="bottom-nav">
     <button class="nav-tab active" data-tab="metadata"><i class="fas fa-info-circle"></i><span>Metadata</span></button>
-    <button class="nav-tab" data-tab="babmedia"><i class="fas fa-layer-group"></i><span>Bab & Media</span></button>
+    <button class="nav-tab" data-tab="babmedia"><i class="fas fa-layer-group"></i><span>Chapters & Media</span></button>
     <button class="nav-tab" data-tab="generate"><i class="fas fa-cog"></i><span>Generate</span></button>
 </div>
-<div id="autoReloadToast" class="toast">🔄 Halaman dimuat ulang</div>
+<div id="autoReloadToast" class="toast">🔄 Page reloaded</div>
 
 <script>
     // ======================= AUTO RELOAD SYSTEM =======================
@@ -533,14 +533,14 @@
         let reloadToast = document.getElementById('autoReloadToast');
         function showToast(message) {
             if (!reloadToast) return;
-            reloadToast.textContent = message || '🔄 Halaman dimuat ulang karena kembali ke tab';
+            reloadToast.textContent = message || '🔄 Page reloaded due to returning to tab';
             reloadToast.classList.add('show');
             setTimeout(() => reloadToast.classList.remove('show'), 3000);
         }
         function resetTimer() { lastActiveTime = Date.now(); }
         function checkAndReload() {
             if (Date.now() - lastActiveTime >= INACTIVE_LIMIT) {
-                showToast('🔄 Me-refresh halaman...');
+                showToast('🔄 Refreshing page...');
                 setTimeout(() => window.location.reload(), 100);
             } else { resetTimer(); }
         }
@@ -620,14 +620,14 @@
             lastUpdated: new Date().toISOString()
         };
         await saveMetadata(metadataObj);
-        await saveProject({ id: projectId, title: document.getElementById('mainTitle').value || 'Proyek Tanpa Judul', chapterCount: babItems.length, lastEdited: new Date().toISOString() });
+        await saveProject({ id: projectId, title: document.getElementById('mainTitle').value || 'Untitled Project', chapterCount: babItems.length, lastEdited: new Date().toISOString() });
     }
     
     async function loadProject() {
         const metadata = await getMetadata(projectId);
         if (!metadata) {
-            document.getElementById('mainTitle').value = 'Buku EPUB Baru';
-            document.getElementById('creator').value = 'Penulis';
+            document.getElementById('mainTitle').value = 'New EPUB Book';
+            document.getElementById('creator').value = 'Author';
             document.getElementById('identifier').value = 'urn:uuid:' + crypto.randomUUID();
             document.getElementById('date').value = new Date().toISOString().slice(0,10);
             await saveCurrentProject();
@@ -637,7 +637,7 @@
         document.getElementById('subTitle').value = metadata.metadata.subTitle || '';
         document.getElementById('volume').value = metadata.metadata.volume || '';
         document.getElementById('creator').value = metadata.metadata.creator || '';
-        document.getElementById('language').value = metadata.metadata.language || 'id';
+        document.getElementById('language').value = metadata.metadata.language || 'en';
         document.getElementById('identifier').value = metadata.metadata.identifier || '';
         document.getElementById('date').value = metadata.metadata.date || '';
         document.getElementById('publisher').value = metadata.metadata.publisher || '';
@@ -651,7 +651,7 @@
         coverImagePath = metadata.coverImagePath;
         hasCoverXhtml = metadata.hasCoverXhtml;
         renderExtraTitles(); renderContributors(); renderBabList(); renderMediaSummary();
-        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Proyek dimuat. Upload ZIP untuk konten.';
+        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Project loaded. Upload ZIP for content.';
     }
     
     function renderExtraTitles() {
@@ -662,13 +662,13 @@
     }
     function renderContributors() {
         const container = document.getElementById('contributorsContainer');
-        container.innerHTML = contributors.map((c, idx) => `<div class="dynamic-item"><input type="text" placeholder="Nama" value="${escapeHtml(c.name)}" data-idx="${idx}" class="contrib-name" style="flex:2;"><input type="text" placeholder="Role" value="${escapeHtml(c.role)}" data-idx="${idx}" class="contrib-role" style="flex:1;"><button class="btn-sm danger remove-contrib" data-idx="${idx}"><i class="fas fa-user-minus"></i></button></div>`).join('');
+        container.innerHTML = contributors.map((c, idx) => `<div class="dynamic-item"><input type="text" placeholder="Name" value="${escapeHtml(c.name)}" data-idx="${idx}" class="contrib-name" style="flex:2;"><input type="text" placeholder="Role" value="${escapeHtml(c.role)}" data-idx="${idx}" class="contrib-role" style="flex:1;"><button class="btn-sm danger remove-contrib" data-idx="${idx}"><i class="fas fa-user-minus"></i></button></div>`).join('');
         document.querySelectorAll('.contrib-name').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); contributors[idx].name = inp.value; saveCurrentProject(); }));
         document.querySelectorAll('.contrib-role').forEach(inp => inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); contributors[idx].role = inp.value; saveCurrentProject(); }));
         document.querySelectorAll('.remove-contrib').forEach(btn => btn.addEventListener('click', (e) => { const idx = parseInt(btn.dataset.idx); contributors.splice(idx,1); renderContributors(); saveCurrentProject(); }));
     }
     function renderBabList() {
-        if (!babItems.length) { babContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#888;">Belum ada bab. Upload ZIP.</div>'; return; }
+        if (!babItems.length) { babContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#888;">No chapters yet. Upload ZIP.</div>'; return; }
         let html = '';
         babItems.forEach((bab, idx) => { html += `<div class="bab-item" draggable="true" data-index="${idx}"><div style="display:flex; align-items:center; gap:8px; flex:1;"><i class="fas fa-grip-vertical" style="cursor:grab; color:#aaa;"></i><input type="text" class="bab-title" value="${escapeHtml(bab.title)}" data-idx="${idx}" style="background:none; border:none;"></div><div><button class="move-btn move-up" data-idx="${idx}"><i class="fas fa-chevron-up"></i></button><button class="move-btn move-down" data-idx="${idx}"><i class="fas fa-chevron-down"></i></button></div></div>`; });
         babContainer.innerHTML = html;
@@ -680,15 +680,15 @@
     function handleDragStart(e) { const el = e.target.closest('.bab-item'); if(el) { dragSrcIndex = parseInt(el.dataset.index); e.dataTransfer.effectAllowed = 'move'; } }
     function handleDrop(e) { e.preventDefault(); const targetEl = e.target.closest('.bab-item'); if(targetEl && dragSrcIndex !== null) { const targetIndex = parseInt(targetEl.dataset.index); if(dragSrcIndex !== targetIndex) { const [moved] = babItems.splice(dragSrcIndex,1); babItems.splice(targetIndex,0,moved); renderBabList(); saveCurrentProject(); } dragSrcIndex = null; } }
     function attachMoveButtons() { document.querySelectorAll('.move-up').forEach(btn => btn.addEventListener('click', () => { const idx = parseInt(btn.dataset.idx); if(idx>0) { [babItems[idx-1], babItems[idx]] = [babItems[idx], babItems[idx-1]]; renderBabList(); saveCurrentProject(); } })); document.querySelectorAll('.move-down').forEach(btn => btn.addEventListener('click', () => { const idx = parseInt(btn.dataset.idx); if(idx<babItems.length-1) { [babItems[idx+1], babItems[idx]] = [babItems[idx], babItems[idx+1]]; renderBabList(); saveCurrentProject(); } })); }
-    function renderMediaSummary() { mediaSummary.innerHTML = `<i class="fas fa-image"></i> ${mediaItems.images.length} Gambar &nbsp;| <i class="fas fa-headphones"></i> ${mediaItems.audio.length} Audio &nbsp;| <span class="chip-accent" style="display:inline-block;">Cover: ${coverImagePath ? '✅ Ada' : '❌ Tidak ada'}</span>`; }
+    function renderMediaSummary() { mediaSummary.innerHTML = `<i class="fas fa-image"></i> ${mediaItems.images.length} Images &nbsp;| <i class="fas fa-headphones"></i> ${mediaItems.audio.length} Audio &nbsp;| <span class="chip-accent" style="display:inline-block;">Cover: ${coverImagePath ? '✅ Yes' : '❌ No'}</span>`; }
     
     fileZone.addEventListener('click', () => zipInput.click());
     zipInput.addEventListener('change', handleZipUpload);
     
     async function handleZipUpload(e) {
         const file = e.target.files[0];
-        if (!file || !file.name.endsWith('.zip')) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Pilih file ZIP yang valid.'; return; }
-        statusDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Membaca ZIP...';
+        if (!file || !file.name.endsWith('.zip')) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Select a valid ZIP file.'; return; }
+        statusDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Reading ZIP...';
         progressBar.style.display = 'block';
         document.querySelector('.progress-bar').style.width = '20%';
         try {
@@ -726,18 +726,18 @@
             babItems = newBabItems.sort((a,b)=>a.name.localeCompare(b.name));
             mediaItems = newMedia; coverImagePath = newCoverPath; hasCoverXhtml = newHasCoverXhtml;
             renderBabList(); renderMediaSummary();
-            statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> ZIP siap: ${babItems.length} bab, ${mediaItems.images.length} gambar, ${mediaItems.audio.length} audio.`;
+            statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> ZIP ready: ${babItems.length} chapters, ${mediaItems.images.length} images, ${mediaItems.audio.length} audio.`;
             await saveCurrentProject();
             progressBar.style.display = 'none';
-        } catch(err) { statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> Gagal membaca ZIP.'; progressBar.style.display = 'none'; }
+        } catch(err) { statusDiv.innerHTML = '<i class="fas fa-times-circle"></i> Failed to read ZIP.'; progressBar.style.display = 'none'; }
     }
     
     document.getElementById('generateBtn').addEventListener('click', async () => {
-        if (!originalZipBlob) { statusDiv.innerHTML = '<i class="fas fa-ban"></i> Upload ZIP terlebih dahulu.'; return; }
+        if (!originalZipBlob) { statusDiv.innerHTML = '<i class="fas fa-ban"></i> Upload ZIP first.'; return; }
         const mainTitle = document.getElementById('mainTitle').value.trim();
         const creator = document.getElementById('creator').value.trim();
-        if (!mainTitle || !creator) { alert("Judul dan Penulis harus diisi."); return; }
-        statusDiv.innerHTML = '<i class="fas fa-cog fa-spin"></i> Membangun EPUB...';
+        if (!mainTitle || !creator) { alert("Title and Author are required."); return; }
+        statusDiv.innerHTML = '<i class="fas fa-cog fa-spin"></i> Building EPUB...';
         const newZip = new JSZip();
         const zip = await JSZip.loadAsync(originalZipBlob);
         const skipPaths = ['content.opf', 'META-INF/container.xml', 'toc.xhtml', 'nav.xhtml', 'cover.xhtml', 'mimetype'];
@@ -758,7 +758,7 @@
         manifest.push(`<item id="cover-xhtml" href="${coverXhtmlPath}" media-type="application/xhtml+xml"/>`);
         spine.push(`<itemref idref="cover-xhtml" linear="yes"/>`);
         const navPoints = babItems.map(bab => `<li><a href="${escapeXml(bab.path.startsWith('EPUB/')?bab.path.substring(5):bab.path)}">${escapeXml(bab.title)}</a></li>`).join("\n");
-        newZip.file("EPUB/toc.xhtml", `<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Daftar Isi</title></head><body><nav epub:type="toc"><h1>Daftar Isi</h1><ol>${navPoints}</ol></nav></body></html>`);
+        newZip.file("EPUB/toc.xhtml", `<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Table of Contents</title></head><body><nav epub:type="toc"><h1>Table of Contents</h1><ol>${navPoints}</ol></nav></body></html>`);
         manifest.push(`<item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav"/>`);
         spine.push(`<itemref idref="toc" linear="no"/>`);
         babItems.forEach((bab, idx) => { const id = `chap_${idx+1}`; let href = bab.path.startsWith('EPUB/') ? bab.path.substring(5) : bab.path; manifest.push(`<item id="${id}" href="${href}" media-type="application/xhtml+xml"/>`); spine.push(`<itemref idref="${id}" linear="yes"/>`); });
@@ -780,12 +780,12 @@
         newZip.file("EPUB/content.opf", opf);
         const zipBlob = await newZip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
         const url = URL.createObjectURL(zipBlob); const a = document.createElement('a'); a.href = url; a.download = `${mainTitle.replace(/[^a-z0-9]/gi, '_')}_epub.zip`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Berhasil! File ZIP EPUB siap.';
+        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Success! EPUB ZIP file ready.';
         await saveCurrentProject();
     });
     
-    document.getElementById('resetProjectBtn').addEventListener('click', async () => { if(confirm('Hapus semua data proyek ini?')) { await deleteProject(projectId); projectId = Date.now().toString(); localStorage.setItem('current_project_id', projectId); location.reload(); } });
-    document.getElementById('downloadTemplateBtn').addEventListener('click', () => { const template = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id"><head><title>Judul Bab</title><meta name="viewport" content="width=device-width"/></head><body><h1>Judul Bab</h1><p>Tulis konten di sini.</p></body></html>`; const blob = new Blob([template], {type:"application/xhtml+xml"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "template-bab.xhtml"; a.click(); URL.revokeObjectURL(a.href); });
+    document.getElementById('resetProjectBtn').addEventListener('click', async () => { if(confirm('Delete all data of this project?')) { await deleteProject(projectId); projectId = Date.now().toString(); localStorage.setItem('current_project_id', projectId); location.reload(); } });
+    document.getElementById('downloadTemplateBtn').addEventListener('click', () => { const template = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><title>Chapter Title</title><meta name="viewport" content="width=device-width"/></head><body><h1>Chapter Title</h1><p>Write content here.</p></body></html>`; const blob = new Blob([template], {type:"application/xhtml+xml"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "template-chapter.xhtml"; a.click(); URL.revokeObjectURL(a.href); });
     const autoSaveFields = ['mainTitle','subTitle','volume','creator','language','identifier','date','publisher','description','subjects','collectionName','collectionNumber'];
     autoSaveFields.forEach(id => { document.getElementById(id)?.addEventListener('input', () => saveCurrentProject()); });
     document.getElementById('addExtraTitleBtn')?.addEventListener('click', () => { extraTitles.push(''); renderExtraTitles(); saveCurrentProject(); });
