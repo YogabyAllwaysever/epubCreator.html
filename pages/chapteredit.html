@@ -93,7 +93,6 @@
             margin-bottom: 1.5rem;
             box-shadow: var(--srui-shadow-card);
         }
-        /* Sticky toolbar */
         .ql-toolbar.ql-snow {
             position: sticky;
             top: 80px;
@@ -280,14 +279,16 @@
         placeholder: 'Write your chapter content here...'
     });
 
-    // Tambahkan tombol Undo/Redo ke toolbar
+    // Tambahkan tombol Undo/Redo ke toolbar (dengan pengecekan keamanan)
     const toolbar = quill.getModule('toolbar');
-    const undoRedoGroup = document.createElement('span');
-    undoRedoGroup.className = 'custom-undo-redo';
-    undoRedoGroup.innerHTML = '<button id="quill-undo"><i class="fas fa-undo"></i> Undo</button><button id="quill-redo"><i class="fas fa-redo"></i> Redo</button>';
-    toolbar.container.appendChild(undoRedoGroup);
-    document.getElementById('quill-undo').addEventListener('click', () => quill.history.undo());
-    document.getElementById('quill-redo').addEventListener('click', () => quill.history.redo());
+    if (toolbar && toolbar.container) {
+        const undoRedoGroup = document.createElement('span');
+        undoRedoGroup.className = 'custom-undo-redo';
+        undoRedoGroup.innerHTML = '<button id="quill-undo"><i class="fas fa-undo"></i> Undo</button><button id="quill-redo"><i class="fas fa-redo"></i> Redo</button>';
+        toolbar.container.appendChild(undoRedoGroup);
+        document.getElementById('quill-undo')?.addEventListener('click', () => quill.history.undo());
+        document.getElementById('quill-redo')?.addEventListener('click', () => quill.history.redo());
+    }
 
     function sanitizeXHTML(html) {
         return DOMPurify.sanitize(html, {
@@ -304,12 +305,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>${escapeXml(title)}</title>
-</head>
+    <title>${escapeXml(title)}<\/title>
+<\/head>
 <body>
     ${cleanBody}
-</body>
-</html>`;
+<\/body>
+<\/html>`;
     }
 
     function escapeXml(str) {
@@ -324,6 +325,7 @@
 
     function showToast(msg) {
         const toast = document.getElementById('toastMsg');
+        if (!toast) return;
         toast.textContent = msg;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
@@ -331,8 +333,9 @@
 
     function statusMessage(msg, type = 'info') {
         const statusDiv = document.getElementById('status');
+        if (!statusDiv) return;
         const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
-        statusDiv.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+        statusDiv.innerHTML = `<i class="fas ${icon}"><\/i> ${msg}`;
         if (type === 'success') showToast(msg);
     }
 
@@ -425,7 +428,7 @@
         }, 800);
     }
 
-    // Auto-save draft setiap 30 detik
+    // Auto-save draft every 30 seconds
     function autoSaveDraft() {
         const title = document.getElementById('chapterTitle').value;
         const content = quill.root.innerHTML;
